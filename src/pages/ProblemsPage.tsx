@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import useProblems from '../hooks/useProblems';
 import { useFilteredProblems } from '../hooks/useFilteredProblems';
 import useFilterStore from '../store/filterStore';
@@ -27,10 +27,11 @@ function ProblemsPage() {
   }), [difficulty, categories]);
 
   // Handle filter changes from FilterSidebar
-  const handleFilterChange = (newFilters: { difficulties: string[]; categories: string[] }) => {
+  // Memoize to prevent infinite loop in FilterSidebar's useEffect
+  const handleFilterChange = useCallback((newFilters: { difficulties: string[]; categories: string[] }) => {
     setDifficulty(newFilters.difficulties);
     setCategories(newFilters.categories);
-  };
+  }, [setDifficulty, setCategories]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

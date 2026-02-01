@@ -21,38 +21,51 @@ function FilterSidebar({
 
   const difficulties = ['Easy', 'Medium', 'Hard'];
 
-  // Update parent when filters change
+  // Sync internal state when external filters change (e.g., from URL or reset)
   useEffect(() => {
+    setSelectedDifficulties(filters.difficulties || []);
+    setSelectedCategories(filters.categories || []);
+  }, [filters.difficulties, filters.categories]);
+
+  // Helper to notify parent of changes
+  const notifyChange = (newDifficulties, newCategories) => {
     if (onFilterChange) {
       onFilterChange({
-        difficulties: selectedDifficulties,
-        categories: selectedCategories,
+        difficulties: newDifficulties,
+        categories: newCategories,
       });
     }
-  }, [selectedDifficulties, selectedCategories, onFilterChange]);
+  };
 
   // Toggle difficulty filter
   const toggleDifficulty = (difficulty) => {
-    setSelectedDifficulties((prev) =>
-      prev.includes(difficulty)
+    setSelectedDifficulties((prev) => {
+      const newDifficulties = prev.includes(difficulty)
         ? prev.filter((d) => d !== difficulty)
-        : [...prev, difficulty]
-    );
+        : [...prev, difficulty];
+      // Notify parent immediately with new values
+      notifyChange(newDifficulties, selectedCategories);
+      return newDifficulties;
+    });
   };
 
   // Toggle category filter
   const toggleCategory = (category) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category)
+    setSelectedCategories((prev) => {
+      const newCategories = prev.includes(category)
         ? prev.filter((c) => c !== category)
-        : [...prev, category]
-    );
+        : [...prev, category];
+      // Notify parent immediately with new values
+      notifyChange(selectedDifficulties, newCategories);
+      return newCategories;
+    });
   };
 
   // Clear all filters
   const clearFilters = () => {
     setSelectedDifficulties([]);
     setSelectedCategories([]);
+    notifyChange([], []);
   };
 
   const hasActiveFilters =
