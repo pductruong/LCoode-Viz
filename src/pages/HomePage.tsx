@@ -1,5 +1,32 @@
 import { Link } from 'react-router-dom';
 
+interface Feature {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+const features: Feature[] = [
+  {
+    icon: '🎬',
+    title: 'Step-by-Step Animations',
+    description:
+      'Watch algorithms execute in real-time with smooth, interactive visualizations.',
+  },
+  {
+    icon: '💡',
+    title: 'Clear Explanations',
+    description:
+      'Understand the why behind each step with detailed explanations and insights.',
+  },
+  {
+    icon: '🎯',
+    title: 'Interview Ready',
+    description:
+      'Practice with curated LeetCode problems commonly asked in tech interviews.',
+  },
+];
+
 function HomePage() {
   return (
     <div className="animate-fade-in">
@@ -77,26 +104,5 @@ function HomePage() {
     </div>
   );
 }
-
-const features = [
-  {
-    icon: '🎬',
-    title: 'Step-by-Step Animations',
-    description:
-      'Watch algorithms execute in real-time with smooth, interactive visualizations.',
-  },
-  {
-    icon: '💡',
-    title: 'Clear Explanations',
-    description:
-      'Understand the why behind each step with detailed explanations and insights.',
-  },
-  {
-    icon: '🎯',
-    title: 'Interview Ready',
-    description:
-      'Practice with curated LeetCode problems commonly asked in tech interviews.',
-  },
-];
 
 export default HomePage;
