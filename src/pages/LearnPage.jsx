@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import TopicCard from '../components/learn/TopicCard';
+import useTopicStore from '../store/topicStore';
 
 /**
  * LearnPage - Main learning hub for data structures and algorithms
@@ -9,78 +10,15 @@ function LearnPage() {
   const [activeCategory, setActiveCategory] = useState('data-structures');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Sample topics - will be replaced with actual data later
-  const sampleTopics = {
-    'data-structures': [
-      {
-        id: 'array',
-        title: 'Array',
-        icon: '📊',
-        difficulty: 'beginner',
-        timeToLearn: 10,
-        description: 'Contiguous memory storage for elements with fast random access',
-        category: 'data-structures'
-      },
-      {
-        id: 'linked-list',
-        title: 'Linked List',
-        icon: '🔗',
-        difficulty: 'beginner',
-        timeToLearn: 15,
-        description: 'Dynamic data structure with nodes connected by pointers',
-        category: 'data-structures'
-      },
-      {
-        id: 'stack',
-        title: 'Stack',
-        icon: '📚',
-        difficulty: 'beginner',
-        timeToLearn: 12,
-        description: 'LIFO (Last In, First Out) data structure',
-        category: 'data-structures'
-      }
-    ],
-    'algorithms': [
-      {
-        id: 'binary-search',
-        title: 'Binary Search',
-        icon: '🔍',
-        difficulty: 'beginner',
-        timeToLearn: 15,
-        description: 'Efficient search algorithm for sorted arrays',
-        category: 'algorithms'
-      },
-      {
-        id: 'bfs',
-        title: 'Breadth-First Search',
-        icon: '🌊',
-        difficulty: 'intermediate',
-        timeToLearn: 20,
-        description: 'Level-order graph/tree traversal algorithm',
-        category: 'algorithms'
-      }
-    ],
-    'patterns': [
-      {
-        id: 'two-pointers',
-        title: 'Two Pointers',
-        icon: '👉👈',
-        difficulty: 'beginner',
-        timeToLearn: 15,
-        description: 'Technique using two pointers to traverse data',
-        category: 'patterns'
-      },
-      {
-        id: 'sliding-window',
-        title: 'Sliding Window',
-        icon: '🪟',
-        difficulty: 'intermediate',
-        timeToLearn: 18,
-        description: 'Pattern for subarray/substring problems',
-        category: 'patterns'
-      }
-    ]
-  };
+  // Get topics from store
+  const { topics, loading, error, loadTopics, getTopicsByCategory, searchTopics } = useTopicStore();
+
+  // Load topics on mount
+  useEffect(() => {
+    if (topics.length === 0) {
+      loadTopics();
+    }
+  }, []);
 
   const categories = [
     { id: 'data-structures', label: 'Data Structures', icon: '🏗️' },
@@ -88,11 +26,16 @@ function LearnPage() {
     { id: 'patterns', label: 'Patterns', icon: '🎯' }
   ];
 
+  // Get topics based on active category
+  const categoryTopics = getTopicsByCategory(activeCategory);
+
   // Filter topics based on search query
-  const filteredTopics = (sampleTopics[activeCategory] || []).filter(topic =>
-    topic.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    topic.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredTopics = searchQuery
+    ? categoryTopics.filter(topic =>
+        topic.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        topic.description.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : categoryTopics;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -165,31 +108,61 @@ function LearnPage() {
 
       {/* Topics Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Stats */}
-        <div className="mb-8">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Showing {filteredTopics.length} topic{filteredTopics.length !== 1 ? 's' : ''}
-            {searchQuery && ` matching "${searchQuery}"`}
-          </p>
-        </div>
-
-        {/* Topics */}
-        {filteredTopics.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredTopics.map((topic) => (
-              <TopicCard key={topic.id} topic={topic} />
-            ))}
-          </div>
-        ) : (
+        {/* Loading State */}
+        {loading && (
           <div className="text-center py-12">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              No topics found
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              Try adjusting your search or browse different categories
-            </p>
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary-600 border-t-transparent"></div>
+            <p className="mt-4 text-gray-600 dark:text-gray-400">Loading topics...</p>
           </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-center">
+            <div className="text-4xl mb-2">⚠️</div>
+            <h3 className="text-xl font-semibold text-red-900 dark:text-red-200 mb-2">
+              Failed to load topics
+            </h3>
+            <p className="text-red-700 dark:text-red-300">{error}</p>
+            <button
+              onClick={loadTopics}
+              className="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        )}
+
+        {/* Content - only show when not loading and no error */}
+        {!loading && !error && (
+          <>
+            {/* Stats */}
+            <div className="mb-8">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Showing {filteredTopics.length} topic{filteredTopics.length !== 1 ? 's' : ''}
+                {searchQuery && ` matching "${searchQuery}"`}
+              </p>
+            </div>
+
+            {/* Topics */}
+            {filteredTopics.length > 0 ? (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredTopics.map((topic) => (
+                  <TopicCard key={topic.id} topic={topic} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="text-6xl mb-4">🔍</div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  No topics found
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Try adjusting your search or browse different categories
+                </p>
+              </div>
+            )}
+          </>
         )}
 
         {/* Coming Soon Notice */}

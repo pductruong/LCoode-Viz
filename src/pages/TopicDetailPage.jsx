@@ -1,14 +1,29 @@
-import { useParams, Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import CodeBlock from '../components/learn/CodeBlock';
 import ComplexityTable from '../components/learn/ComplexityTable';
+import LinkedListVisualizer from '../components/learn/LinkedListVisualizer';
+import useTopicStore from '../store/topicStore';
 
 /**
  * TopicDetailPage - Detailed view of a single learning topic
  */
 function TopicDetailPage() {
   const { category, topicId } = useParams();
+  const navigate = useNavigate();
 
-  // Sample topic data - will be replaced with actual data later
+  // Get topic from store
+  const { currentTopic, loading, error, loadTopic, clearCurrentTopic } = useTopicStore();
+
+  // Load topic on mount or when topicId changes
+  useEffect(() => {
+    loadTopic(topicId);
+
+    // Clear topic on unmount
+    return () => clearCurrentTopic();
+  }, [topicId]);
+
+  // Use sample data as fallback for topics not yet implemented
   const sampleTopic = {
     id: topicId,
     category: category,
@@ -138,6 +153,18 @@ arr.splice(2, 1);   // Middle: O(n)`,
     ],
   };
 
+  // Use currentTopic from store if available, otherwise use sample data
+  const topic = currentTopic || sampleTopic;
+
+  // Map fullDescription to description format for backward compatibility
+  const displayTopic = {
+    ...topic,
+    description: topic.fullDescription || topic.description || {
+      definition: topic.description || '',
+      analogy: ''
+    }
+  };
+
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
       case 'beginner':
@@ -150,6 +177,49 @@ arr.splice(2, 1);   // Middle: O(n)`,
         return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
     }
   };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary-600 border-t-transparent mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading topic...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error && !currentTopic) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="max-w-md mx-auto px-4">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-8 text-center">
+            <div className="text-4xl mb-4">⚠️</div>
+            <h2 className="text-2xl font-bold text-red-900 dark:text-red-200 mb-2">
+              Topic Not Found
+            </h2>
+            <p className="text-red-700 dark:text-red-300 mb-6">{error}</p>
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={() => navigate('/learn')}
+                className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
+              >
+                Back to Learn
+              </button>
+              <button
+                onClick={() => loadTopic(topicId)}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -189,7 +259,7 @@ arr.splice(2, 1);   // Middle: O(n)`,
               />
             </svg>
             <span className="text-gray-900 dark:text-white font-medium">
-              {sampleTopic.title}
+              {displayTopic.title}
             </span>
           </nav>
         </div>
@@ -199,19 +269,19 @@ arr.splice(2, 1);   // Middle: O(n)`,
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-start gap-4 mb-4">
-            <div className="text-6xl">{sampleTopic.icon}</div>
+            <div className="text-6xl">{displayTopic.icon}</div>
             <div className="flex-1">
               <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                {sampleTopic.title}
+                {displayTopic.title}
               </h1>
               <div className="flex items-center gap-3">
                 <span
                   className={`px-3 py-1 rounded text-sm font-medium ${getDifficultyColor(
-                    sampleTopic.difficulty
+                    displayTopic.difficulty
                   )}`}
                 >
-                  {sampleTopic.difficulty.charAt(0).toUpperCase() +
-                    sampleTopic.difficulty.slice(1)}
+                  {displayTopic.difficulty.charAt(0).toUpperCase() +
+                    displayTopic.difficulty.slice(1)}
                 </span>
                 <span className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
                   <svg
@@ -227,7 +297,7 @@ arr.splice(2, 1);   // Middle: O(n)`,
                       d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  {sampleTopic.timeToLearn} minutes to learn
+                  {displayTopic.timeToLearn} minutes to learn
                 </span>
               </div>
             </div>
@@ -245,7 +315,7 @@ arr.splice(2, 1);   // Middle: O(n)`,
                 Time Complexity
               </h3>
               <ul className="space-y-1 text-sm">
-                {Object.entries(sampleTopic.quickFacts.timeComplexity).map(
+                {Object.entries(displayTopic.quickFacts.timeComplexity).map(
                   ([operation, complexity]) => (
                     <li
                       key={operation}
@@ -265,7 +335,7 @@ arr.splice(2, 1);   // Middle: O(n)`,
                 When to Use
               </h3>
               <ul className="space-y-1 text-sm">
-                {sampleTopic.quickFacts.whenToUse.map((useCase, idx) => (
+                {displayTopic.quickFacts.whenToUse.map((useCase, idx) => (
                   <li
                     key={idx}
                     className="text-gray-600 dark:text-gray-400 flex items-start gap-2"
@@ -288,25 +358,35 @@ arr.splice(2, 1);   // Middle: O(n)`,
           </h2>
           <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4">
             <p className="text-gray-700 dark:text-gray-300">
-              {sampleTopic.description.definition}
+              {displayTopic.description.definition}
             </p>
             <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg border-l-4 border-primary-500">
               <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 💡 Real-world Analogy
               </p>
               <p className="text-gray-600 dark:text-gray-400">
-                {sampleTopic.description.analogy}
+                {displayTopic.description.analogy}
               </p>
             </div>
           </div>
         </section>
+
+        {/* Interactive Visualization - Only for linked-list */}
+        {topicId === 'linked-list' && (
+          <section className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              Interactive Visualization
+            </h2>
+            <LinkedListVisualizer type="singly" />
+          </section>
+        )}
 
         {/* Operations & Complexity */}
         <section className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Operations & Complexity
           </h2>
-          <ComplexityTable operations={sampleTopic.operations} />
+          <ComplexityTable operations={displayTopic.operations} />
         </section>
 
         {/* Code Examples */}
@@ -315,7 +395,7 @@ arr.splice(2, 1);   // Middle: O(n)`,
             Code Examples
           </h2>
           <CodeBlock
-            code={sampleTopic.codeExamples.javascript}
+            code={displayTopic.codeExamples.javascript}
             language="javascript"
           />
         </section>
@@ -331,7 +411,7 @@ arr.splice(2, 1);   // Middle: O(n)`,
                 ✅ Advantages
               </h3>
               <ul className="space-y-2">
-                {sampleTopic.pros.map((pro, idx) => (
+                {displayTopic.pros.map((pro, idx) => (
                   <li
                     key={idx}
                     className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2"
@@ -349,7 +429,7 @@ arr.splice(2, 1);   // Middle: O(n)`,
                 ❌ Disadvantages
               </h3>
               <ul className="space-y-2">
-                {sampleTopic.cons.map((con, idx) => (
+                {displayTopic.cons.map((con, idx) => (
                   <li
                     key={idx}
                     className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2"
@@ -377,7 +457,7 @@ arr.splice(2, 1);   // Middle: O(n)`,
                   ✓ Use when:
                 </h3>
                 <ul className="space-y-2">
-                  {sampleTopic.whenToUse.use.map((useCase, idx) => (
+                  {displayTopic.whenToUse.use.map((useCase, idx) => (
                     <li
                       key={idx}
                       className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2"
@@ -395,7 +475,7 @@ arr.splice(2, 1);   // Middle: O(n)`,
                   ✗ Avoid when:
                 </h3>
                 <ul className="space-y-2">
-                  {sampleTopic.whenToUse.avoid.map((avoidCase, idx) => (
+                  {displayTopic.whenToUse.avoid.map((avoidCase, idx) => (
                     <li
                       key={idx}
                       className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2"
@@ -418,7 +498,7 @@ arr.splice(2, 1);   // Middle: O(n)`,
             Related LeetCode Problems
           </h2>
           <div className="space-y-3">
-            {sampleTopic.relatedProblems.map((problem) => (
+            {displayTopic.relatedProblems.map((problem) => (
               <Link
                 key={problem.id}
                 to={`/problems/${problem.id}`}
