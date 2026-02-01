@@ -1,216 +1,321 @@
 # LCode-Viz Setup Guide
 
-## Project Structure Created
+## Prerequisites
 
-The project has been initialized with the following structure:
+- Node.js 18+ and npm
+- Git
 
-```
-LCode-Viz/
-├── public/                     # Static assets
-├── src/
-│   ├── components/
-│   │   ├── common/            # Header, Footer
-│   │   ├── problem/           # Problem-related components
-│   │   ├── visualization/     # Visualization components
-│   │   └── code/              # Code display components
-│   ├── data/
-│   │   └── problems/          # Problem data
-│   │       ├── arrays/        # Array problems (two-sum.js created)
-│   │       ├── trees/
-│   │       ├── graphs/
-│   │       ├── linked-lists/
-│   │       └── dynamic-programming/
-│   ├── engine/
-│   │   └── renderers/         # Animation renderers
-│   ├── hooks/                 # Custom React hooks
-│   ├── pages/                 # Page components
-│   ├── store/                 # Zustand state management
-│   ├── styles/                # CSS files
-│   ├── utils/                 # Utility functions
-│   ├── App.jsx                # Main app component
-│   └── main.jsx               # Entry point
-├── planning/                  # Detailed planning docs
-├── .eslintrc.cjs              # ESLint configuration
-├── .prettierrc                # Prettier configuration
-├── .gitignore                 # Git ignore rules
-├── index.html                 # HTML template
-├── package.json               # Dependencies
-├── postcss.config.js          # PostCSS configuration
-├── tailwind.config.js         # Tailwind CSS configuration
-├── vite.config.js             # Vite configuration
-└── README.md                  # Project overview
+## Quick Start
 
+### 1. Clone the Repository
+
+```bash
+git clone <repository-url>
+cd LCode-Viz
 ```
 
-## Installation Steps
+### 2. Install Dependencies
 
-### 1. Install Dependencies
-
-Run this command in the project root:
-
+**Frontend**:
 ```bash
 npm install
 ```
 
-This will install all the dependencies listed in `package.json`:
-- React & React DOM
-- React Router (routing)
-- Zustand (state management)
-- Framer Motion (animations)
-- Prism.js (code highlighting)
-- Tailwind CSS (styling)
-- Vite (build tool)
-- ESLint & Prettier (code quality)
+**Backend**:
+```bash
+cd backend
+npm install
+```
 
-### 2. Start Development Server
+### 3. Set Up the Database
 
+```bash
+cd backend
+npx prisma generate          # Generate Prisma client
+npx prisma migrate dev       # Run database migrations
+npm run seed                 # Seed database with initial data
+```
+
+### 4. Configure Environment Variables
+
+**Frontend** (`.env.development`):
+```env
+VITE_API_URL=
+```
+Leave empty to use Vite proxy (recommended for development).
+
+**Backend** (`backend/.env`):
+```env
+DATABASE_URL="file:./dev.db"
+PORT=4000
+NODE_ENV=development
+CORS_ORIGIN=http://localhost:5173
+```
+
+### 5. Run the Application
+
+**Terminal 1 - Backend**:
+```bash
+cd backend
+npm run dev
+```
+Backend will start on `http://localhost:4000`
+
+**Terminal 2 - Frontend**:
 ```bash
 npm run dev
 ```
+Frontend will start on `http://localhost:3000`
 
-This will:
-- Start the Vite dev server
-- Open your browser to http://localhost:3000
-- Enable hot module replacement (changes reflect instantly)
+### 6. Access the Application
 
-### 3. Available Scripts
-
-```bash
-npm run dev      # Start development server
-npm run build    # Build for production
-npm run preview  # Preview production build
-npm run lint     # Run ESLint
-npm run format   # Format code with Prettier
+Open your browser and navigate to:
+```
+http://localhost:3000
 ```
 
-## What's Working Now
+## Development Workflow
 
-### ✅ Completed
-- Project structure created
-- React + Vite configured
-- Tailwind CSS set up
-- React Router configured
-- Basic pages (Home, Problems, Visualization)
-- Header and Footer components
-- Sample problem data structure (two-sum.js)
-- ESLint and Prettier configured
-- Dark mode support (CSS classes ready)
+### Backend Development
 
-### 🚧 To Be Implemented (Follow Roadmap)
-- Animation engine
-- Visualizers (Array, Tree, Graph, etc.)
-- Control panel
-- Code display with highlighting
-- Problem filtering and search
-- More problem data
+- **Start dev server**: `npm run dev` (auto-reload with nodemon)
+- **Generate Prisma client**: `npm run prisma:generate`
+- **Create migration**: `npm run prisma:migrate`
+- **Open Prisma Studio**: `npm run prisma:studio`
+- **Re-seed database**: `npm run seed`
+- **Build for production**: `npm run build`
+- **Run tests**: `npm test`
 
-## Current Pages
+### Frontend Development
 
-1. **Home Page** (`/`)
-   - Hero section
-   - Features showcase
-   - Call-to-action
-   - Fully styled and responsive
+- **Start dev server**: `npm run dev`
+- **Build for production**: `npm run build`
+- **Preview production build**: `npm run preview`
 
-2. **Problems Page** (`/problems`)
-   - Placeholder for problem browsing
-   - Will be implemented in Phase 1, Week 4
+## Project Structure
 
-3. **Visualization Page** (`/problems/:problemId`)
-   - Placeholder for visualizations
-   - Will be implemented in Phase 1, Week 3
+```
+LCode-Viz/
+├── backend/                 # Backend API server
+│   ├── src/
+│   │   ├── config/         # Configuration
+│   │   ├── repositories/   # Data access layer
+│   │   ├── services/       # Business logic
+│   │   ├── controllers/    # HTTP handlers
+│   │   ├── routes/         # API routes
+│   │   ├── middleware/     # Express middleware
+│   │   ├── utils/          # Utilities
+│   │   └── db/             # Database seeds
+│   ├── prisma/
+│   │   └── schema.prisma   # Database schema
+│   └── package.json
+├── src/                     # Frontend source
+│   ├── components/         # React components
+│   ├── pages/             # Page components
+│   ├── hooks/             # Custom hooks
+│   ├── services/          # Service layer
+│   ├── store/             # State management
+│   ├── types/             # TypeScript types
+│   └── providers/         # Context providers
+├── public/                 # Static assets
+└── package.json
+```
 
-## Next Steps (From Roadmap)
+## API Endpoints
 
-Follow the implementation roadmap in `planning/05-implementation-roadmap.md`:
+### Health Check
+- `GET /health` - Server health status
 
-### Week 1 Remaining Tasks:
-1. ✅ Project setup (DONE)
-2. ✅ Basic UI components (DONE)
-3. Next: State management implementation
-4. Next: Problem data loader
+### Problems
+- `GET /api/problems` - List all problems
+  - Query params: `difficulty`, `categories`, `search`
+- `GET /api/problems/:id` - Get problem by ID
+- `GET /api/problems/search?q=query` - Search problems
+- `GET /api/problems/categories` - Get all categories
 
-### Week 2:
-- Build animation engine
-- Create array visualizer
-- Implement control panel
+### Topics
+- `GET /api/topics` - List all topics
+  - Query params: `category`, `search`
+- `GET /api/topics/:id` - Get topic by ID
+- `GET /api/topics/search?q=query` - Search topics
+- `GET /api/topics/categories` - Get all categories
 
-### Week 3:
-- Code display component
-- Complete first visualization (Two Sum)
+## Testing the API
 
-See `planning/05-implementation-roadmap.md` for detailed day-by-day tasks.
+Using curl:
 
-## Development Tips
+```bash
+# Health check
+curl http://localhost:4000/health
 
-### Hot Reload
-- Changes to `.jsx`, `.css` files auto-refresh
-- Changes to config files require server restart
+# Get all problems
+curl http://localhost:4000/api/problems
 
-### Dark Mode
-- Tailwind classes are already set up
-- Use `dark:` prefix (e.g., `dark:bg-gray-900`)
-- Dark mode toggle will be added later
+# Get problems by difficulty
+curl http://localhost:4000/api/problems?difficulty=Easy
 
-### Adding New Problems
-1. Create file in `src/data/problems/[category]/`
-2. Follow the structure in `two-sum.js`
-3. See `planning/02-data-schema.md` for complete schema
+# Search problems
+curl http://localhost:4000/api/problems/search?q=sum
 
-### Code Style
-- ESLint will show errors in your editor
-- Run `npm run format` before committing
-- Prettier will auto-format on save (if configured in VS Code)
+# Get specific problem
+curl http://localhost:4000/api/problems/two-sum
+
+# Get all topics
+curl http://localhost:4000/api/topics
+
+# Get specific topic
+curl http://localhost:4000/api/topics/linked-list
+```
+
+## Database Management
+
+### View Data
+
+Use Prisma Studio to browse and edit data:
+```bash
+cd backend
+npm run prisma:studio
+```
+Opens at `http://localhost:5555`
+
+### Reset Database
+
+To completely reset the database:
+```bash
+cd backend
+rm prisma/dev.db           # Delete database
+npm run prisma:migrate     # Recreate schema
+npm run seed               # Reseed data
+```
+
+### Add New Problems/Topics
+
+1. Update `backend/src/db/seed.ts`
+2. Run: `npm run seed`
 
 ## Troubleshooting
 
-### Port 3000 Already in Use
-Edit `vite.config.js` and change the port:
+### Port Already in Use
+
+If ports 3000 or 4000 are in use:
+
+**Frontend** (edit `vite.config.js`):
 ```javascript
 server: {
-  port: 3001, // Change this
+  port: 3001,  // Change port
+  // ...
 }
 ```
 
-### Dependencies Not Installing
-- Make sure Node.js version is 18+
-- Delete `node_modules` and `package-lock.json`
-- Run `npm install` again
-
-### Tailwind Classes Not Working
-- Check that `index.css` is imported in `main.jsx`
-- Verify `tailwind.config.js` content paths are correct
-- Restart dev server
-
-## Resources
-
-- **Planning Docs**: See `planning/` folder for detailed specifications
-- **Vite Docs**: https://vitejs.dev/
-- **React Docs**: https://react.dev/
-- **Tailwind CSS**: https://tailwindcss.com/docs
-- **Framer Motion**: https://www.framer.com/motion/
-
-## Git Setup (Optional)
-
-If you want to use version control:
-
-```bash
-git init
-git add .
-git commit -m "Initial project setup"
-git branch -M main
-git remote add origin https://github.com/yourusername/lcode-viz.git
-git push -u origin main
+**Backend** (edit `backend/.env`):
+```env
+PORT=4001  # Change port
 ```
 
-## Ready to Code!
+Also update the proxy in `vite.config.js` to match the new backend port.
 
-Your project is set up and ready for development. Start the dev server with:
+### Database Issues
 
+If you encounter Prisma errors:
 ```bash
+cd backend
+npx prisma generate
+npx prisma migrate reset  # WARNING: Deletes all data
+npm run seed
+```
+
+### TypeScript Errors
+
+Clear TypeScript cache:
+```bash
+rm -rf node_modules/.vite
 npm run dev
 ```
 
-Then follow the implementation roadmap in `planning/05-implementation-roadmap.md` to build out the features.
+### CORS Issues
 
-Happy coding! 🚀
+Make sure:
+1. Backend `CORS_ORIGIN` in `.env` matches frontend URL
+2. Frontend is accessing API through proxy (Vite config)
+
+## Production Deployment
+
+### Backend
+
+1. Build:
+```bash
+cd backend
+npm run build
+```
+
+2. Set production environment variables:
+```env
+DATABASE_URL="your-production-db-url"
+NODE_ENV=production
+PORT=4000
+CORS_ORIGIN=https://your-frontend-domain.com
+```
+
+3. Start:
+```bash
+npm start
+```
+
+### Frontend
+
+1. Build:
+```bash
+npm run build
+```
+
+2. Set production environment variables (`.env.production`):
+```env
+VITE_API_URL=https://your-api-domain.com
+```
+
+3. Deploy `dist/` folder to static hosting (Vercel, Netlify, etc.)
+
+## Tech Stack
+
+### Frontend
+- **Framework**: React 18 with TypeScript
+- **State Management**: Zustand
+- **Routing**: React Router v6
+- **Styling**: Tailwind CSS
+- **Build Tool**: Vite
+- **Animation**: Framer Motion
+
+### Backend
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Database**: SQLite (dev) / PostgreSQL (production)
+- **ORM**: Prisma
+- **Validation**: Zod
+- **Logger**: Winston
+- **Language**: TypeScript
+
+## Architecture
+
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed architecture documentation, SOLID principles implementation, and design patterns used.
+
+## Git Workflow
+
+Current branch structure:
+- `main` - Main development branch
+- `pre-refactor-backup` - Backup before SOLID refactoring
+- Tag: `v0.2.0-pre-refactor` - Pre-refactoring state
+
+## Next Steps
+
+1. Run the application and test the API
+2. Explore the refactored codebase
+3. Read [ARCHITECTURE.md](./ARCHITECTURE.md) for architecture details
+4. Start adding new problems/topics
+5. Implement remaining features (component refactoring, testing, etc.)
+
+## Support
+
+For issues or questions, refer to:
+- [ARCHITECTURE.md](./ARCHITECTURE.md) - Architecture documentation
+- [README.md](./README.md) - Project overview
+- Git commit history for implementation details
