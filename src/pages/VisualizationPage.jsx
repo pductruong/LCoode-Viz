@@ -4,6 +4,8 @@ import useProblem from '../hooks/useProblem';
 import useAnimation from '../hooks/useAnimation';
 import AnimationControls from '../components/visualization/AnimationControls';
 import ArrayVisualizer from '../components/visualization/ArrayVisualizer';
+import QueueVisualizer from '../components/visualization/QueueVisualizer';
+import GraphVisualizer from '../components/visualization/GraphVisualizer';
 
 function VisualizationPage() {
   const { problemId } = useParams();
@@ -177,7 +179,10 @@ function VisualizationPage() {
             </h2>
 
             {/* Import and use animation components */}
-            <AnimationSection steps={problem.solutions[0].steps} />
+            <AnimationSection
+              steps={problem.solutions[0].steps}
+              visualizationType={problem.visualizationType}
+            />
           </div>
         )}
     </div>
@@ -185,7 +190,7 @@ function VisualizationPage() {
 }
 
 // Separate component to handle animation
-function AnimationSection({ steps }) {
+function AnimationSection({ steps, visualizationType }) {
   const animation = useAnimation(steps);
 
   return (
@@ -213,10 +218,15 @@ function AnimationSection({ steps }) {
           <p className="text-gray-900 dark:text-white font-medium">
             {animation.currentStep.description}
           </p>
+          {animation.currentStep.operation && (
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              Operation: <span className="font-semibold">{animation.currentStep.operation}</span>
+            </p>
+          )}
         </div>
       )}
 
-      {/* Array Visualization */}
+      {/* Array Visualization (for array-based problems) */}
       {animation.currentStep && animation.currentStep.array && (
         <ArrayVisualizer
           array={animation.currentStep.array}
@@ -224,12 +234,35 @@ function AnimationSection({ steps }) {
           variables={animation.currentStep.variables || []}
         />
       )}
+
+      {/* Graph/BFS Visualization (for graph-based problems) */}
+      {animation.currentStep && visualizationType === 'graph' && (
+        <div className="space-y-6">
+          {/* Queue Visualization */}
+          {animation.currentStep.queue && (
+            <QueueVisualizer
+              queue={animation.currentStep.queue}
+              visited={animation.currentStep.visited || []}
+              wordList={animation.currentStep.wordList || []}
+            />
+          )}
+
+          {/* Graph Visualization */}
+          {animation.currentStep.graph && (
+            <GraphVisualizer
+              graph={animation.currentStep.graph}
+              pathFound={animation.currentStep.pathFound || []}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
 AnimationSection.propTypes = {
   steps: PropTypes.arrayOf(PropTypes.object).isRequired,
+  visualizationType: PropTypes.string,
 };
 
 export default VisualizationPage;

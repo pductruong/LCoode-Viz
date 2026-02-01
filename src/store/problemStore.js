@@ -21,10 +21,11 @@ const useProblemStore = create((set, get) => ({
   loadProblems: async () => {
     set({ loading: true, error: null });
     try {
-      // For now, we'll import problems dynamically
-      // Later this will load all problems from the data folder
+      // Import all available problems
       const { twoSum } = await import('../data/problems/arrays/two-sum.js');
-      set({ problems: [twoSum], loading: false });
+      const { wordLadder } = await import('../data/problems/graphs/word-ladder.js');
+
+      set({ problems: [twoSum, wordLadder], loading: false });
     } catch (error) {
       set({ error: error.message, loading: false });
     }
@@ -35,10 +36,12 @@ const useProblemStore = create((set, get) => ({
     set({ loading: true, error: null });
     try {
       // Dynamic import based on problem ID
-      // For now, we only have two-sum
       if (problemId === 'two-sum') {
         const { twoSum } = await import('../data/problems/arrays/two-sum.js');
         set({ currentProblem: twoSum, loading: false });
+      } else if (problemId === 'word-ladder') {
+        const { wordLadder } = await import('../data/problems/graphs/word-ladder.js');
+        set({ currentProblem: wordLadder, loading: false });
       } else {
         throw new Error('Problem not found');
       }
