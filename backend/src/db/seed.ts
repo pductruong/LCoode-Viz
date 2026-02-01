@@ -128,7 +128,7 @@ async function seed() {
         category: 'Data Structures',
         title: 'Linked List',
         icon: '🔗',
-        difficulty: 'Beginner',
+        difficulty: 'beginner',
         timeToLearn: 45,
         description: 'A linear data structure where elements are stored in nodes',
         fullDescription: JSON.stringify({
