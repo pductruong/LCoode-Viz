@@ -1,0 +1,60 @@
+// Prisma schema for LCode-Viz backend
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Problem {
+  id                String     @id
+  title             String
+  difficulty        String     // "Easy", "Medium", "Hard"
+  categories        String     // JSON array as string
+  description       String
+  visualizationType String
+  examples          String     // JSON array as string
+  constraints       String     // JSON array as string
+  solutions         Solution[]
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+}
+
+model Solution {
+  id              String  @id @default(uuid())
+  problemId       String
+  problem         Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  name            String
+  code            String
+  timeComplexity  String
+  spaceComplexity String
+  steps           String  // JSON array as string
+  explanation     String?
+}
+
+model Topic {
+  id              String   @id
+  category        String
+  title           String
+  icon            String
+  difficulty      String
+  timeToLearn     Int
+  description     String
+  fullDescription String   // JSON as string
+  quickFacts      String   // JSON as string
+  types           String?  // JSON as string (optional)
+  operations      String?  // JSON as string (optional)
+  codeExamples    String   // JSON as string
+  pros            String   // JSON array as string
+  cons            String   // JSON array as string
+  whenToUse       String   // JSON as string
+  commonPatterns  String?  // JSON as string (optional)
+  visualConcepts  String?  // JSON as string (optional)
+  relatedProblems String?  // JSON as string (optional)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
