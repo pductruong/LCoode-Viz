@@ -24,8 +24,9 @@ const useProblemStore = create((set, get) => ({
       // Import all available problems
       const { twoSum } = await import('../data/problems/arrays/two-sum.js');
       const { wordLadder } = await import('../data/problems/graphs/word-ladder.js');
+      const { zigzagConversion } = await import('../data/problems/strings/zigzag-conversion.js');
 
-      set({ problems: [twoSum, wordLadder], loading: false });
+      set({ problems: [twoSum, wordLadder, zigzagConversion], loading: false });
     } catch (error) {
       set({ error: error.message, loading: false });
     }
@@ -42,6 +43,9 @@ const useProblemStore = create((set, get) => ({
       } else if (problemId === 'word-ladder') {
         const { wordLadder } = await import('../data/problems/graphs/word-ladder.js');
         set({ currentProblem: wordLadder, loading: false });
+      } else if (problemId === 'zigzag-conversion') {
+        const { zigzagConversion } = await import('../data/problems/strings/zigzag-conversion.js');
+        set({ currentProblem: zigzagConversion, loading: false });
       } else {
         throw new Error('Problem not found');
       }

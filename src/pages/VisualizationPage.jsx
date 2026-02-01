@@ -6,6 +6,7 @@ import AnimationControls from '../components/visualization/AnimationControls';
 import ArrayVisualizer from '../components/visualization/ArrayVisualizer';
 import QueueVisualizer from '../components/visualization/QueueVisualizer';
 import GraphVisualizer from '../components/visualization/GraphVisualizer';
+import ZigzagVisualizer from '../components/visualization/ZigzagVisualizer';
 
 function VisualizationPage() {
   const { problemId } = useParams();
@@ -255,6 +256,18 @@ function AnimationSection({ steps, visualizationType }) {
             />
           )}
         </div>
+      )}
+
+      {/* Zigzag Visualization (for string pattern problems) */}
+      {animation.currentStep && visualizationType === 'zigzag' && (
+        <ZigzagVisualizer
+          grid={animation.currentStep.grid || []}
+          rows={animation.currentStep.rows || []}
+          position={animation.currentStep.position}
+          readingRow={animation.currentStep.readingRow}
+          finalResult={animation.currentStep.finalResult}
+          variables={animation.currentStep.variables || []}
+        />
       )}
     </div>
   );
