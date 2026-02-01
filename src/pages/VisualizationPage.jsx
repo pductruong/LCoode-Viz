@@ -1,5 +1,9 @@
 import { useParams } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import useProblem from '../hooks/useProblem';
+import useAnimation from '../hooks/useAnimation';
+import AnimationControls from '../components/visualization/AnimationControls';
+import ArrayVisualizer from '../components/visualization/ArrayVisualizer';
 
 function VisualizationPage() {
   const { problemId } = useParams();
@@ -162,19 +166,70 @@ function VisualizationPage() {
         </div>
       )}
 
-      {/* Visualization Coming Soon */}
-      <div className="mt-6 bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-lg p-8 text-center">
-        <div className="text-6xl mb-4">🎨</div>
-        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
-          Interactive Visualization Coming Soon
-        </h2>
-        <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-          Animation controls and step-by-step visualization will be implemented
-          in Week 2-3.
-        </p>
-      </div>
+      {/* Animation Visualization */}
+      {problem.solutions &&
+        problem.solutions.length > 0 &&
+        problem.solutions[0].steps &&
+        problem.solutions[0].steps.length > 0 && (
+          <div className="mt-8 space-y-6">
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+              Step-by-Step Visualization
+            </h2>
+
+            {/* Import and use animation components */}
+            <AnimationSection steps={problem.solutions[0].steps} />
+          </div>
+        )}
     </div>
   );
 }
+
+// Separate component to handle animation
+function AnimationSection({ steps }) {
+  const animation = useAnimation(steps);
+
+  return (
+    <div className="space-y-6">
+      {/* Animation Controls */}
+      <AnimationControls
+        isPlaying={animation.isPlaying}
+        isPaused={animation.isPaused}
+        currentStepIndex={animation.currentStepIndex}
+        totalSteps={animation.totalSteps}
+        speed={animation.speed}
+        progress={animation.progress}
+        isAtStart={animation.isAtStart}
+        isAtEnd={animation.isAtEnd}
+        onTogglePlayPause={animation.togglePlayPause}
+        onNextStep={animation.nextStep}
+        onPreviousStep={animation.previousStep}
+        onReset={animation.reset}
+        onSpeedChange={animation.setSpeed}
+      />
+
+      {/* Step Description */}
+      {animation.currentStep && (
+        <div className="bg-primary-50 dark:bg-primary-900/20 border-l-4 border-primary-500 p-4">
+          <p className="text-gray-900 dark:text-white font-medium">
+            {animation.currentStep.description}
+          </p>
+        </div>
+      )}
+
+      {/* Array Visualization */}
+      {animation.currentStep && animation.currentStep.array && (
+        <ArrayVisualizer
+          array={animation.currentStep.array}
+          pointers={animation.currentStep.pointers || []}
+          variables={animation.currentStep.variables || []}
+        />
+      )}
+    </div>
+  );
+}
+
+AnimationSection.propTypes = {
+  steps: PropTypes.arrayOf(PropTypes.object).isRequired,
+};
 
 export default VisualizationPage;
