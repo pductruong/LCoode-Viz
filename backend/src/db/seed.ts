@@ -130,43 +130,183 @@ async function seed() {
         icon: '🔗',
         difficulty: 'beginner',
         timeToLearn: 45,
-        description: 'A linear data structure where elements are stored in nodes',
+        description: 'A linear data structure where elements are stored in nodes, each pointing to the next node',
         fullDescription: JSON.stringify({
-          intro: 'A linked list is a linear data structure...',
-          sections: [],
+          definition: 'A linked list is a linear data structure where elements are stored in nodes. Each node contains data and a reference (pointer) to the next node in the sequence.',
+          analogy: 'Think of a linked list like a treasure hunt where each clue (node) tells you where to find the next clue. You must follow the chain from start to finish - you can\'t jump to the middle.',
         }),
-        quickFacts: JSON.stringify([
-          'Dynamic size',
-          'Easy insertion/deletion',
-          'Sequential access',
-        ]),
+        quickFacts: JSON.stringify({
+          timeComplexity: {
+            access: 'O(n)',
+            search: 'O(n)',
+            insertHead: 'O(1)',
+            insertTail: 'O(1)',
+            deleteHead: 'O(1)',
+            deleteTail: 'O(n)',
+          },
+          spaceComplexity: 'O(n)',
+          whenToUse: [
+            'Frequent insertions/deletions at beginning',
+            'Dynamic size is needed',
+            'Don\'t need random access',
+          ],
+        }),
         types: JSON.stringify([
           { name: 'Singly Linked List', description: 'One-way direction' },
           { name: 'Doubly Linked List', description: 'Two-way direction' },
+          { name: 'Circular Linked List', description: 'Last node points to first' },
         ]),
         operations: JSON.stringify([
-          { name: 'Append', complexity: 'O(1)' },
-          { name: 'Prepend', complexity: 'O(1)' },
-          { name: 'Delete', complexity: 'O(n)' },
-        ]),
-        codeExamples: JSON.stringify([
           {
-            title: 'Node Class',
-            code: 'class Node { constructor(data) { this.data = data; this.next = null; } }',
+            name: 'Access',
+            timeAvg: 'O(n)',
+            timeWorst: 'O(n)',
+            space: 'O(1)',
+            code: 'traverse from head',
+          },
+          {
+            name: 'Search',
+            timeAvg: 'O(n)',
+            timeWorst: 'O(n)',
+            space: 'O(1)',
+            code: 'while (current) { ... }',
+          },
+          {
+            name: 'Insert (head)',
+            timeAvg: 'O(1)',
+            timeWorst: 'O(1)',
+            space: 'O(1)',
+            code: 'node.next = head; head = node',
+          },
+          {
+            name: 'Insert (tail)',
+            timeAvg: 'O(1)',
+            timeWorst: 'O(1)',
+            space: 'O(1)',
+            code: 'tail.next = node; tail = node',
+          },
+          {
+            name: 'Delete (head)',
+            timeAvg: 'O(1)',
+            timeWorst: 'O(1)',
+            space: 'O(1)',
+            code: 'head = head.next',
+          },
+          {
+            name: 'Delete (middle)',
+            timeAvg: 'O(n)',
+            timeWorst: 'O(n)',
+            space: 'O(1)',
+            code: 'prev.next = current.next',
           },
         ]),
+        codeExamples: JSON.stringify({
+          javascript: `// Node class
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+// Linked List class
+class LinkedList {
+  constructor() {
+    this.head = null;
+    this.tail = null;
+    this.size = 0;
+  }
+
+  // Add to beginning: O(1)
+  prepend(data) {
+    const newNode = new Node(data);
+    if (!this.head) {
+      this.head = this.tail = newNode;
+    } else {
+      newNode.next = this.head;
+      this.head = newNode;
+    }
+    this.size++;
+  }
+
+  // Add to end: O(1)
+  append(data) {
+    const newNode = new Node(data);
+    if (!this.tail) {
+      this.head = this.tail = newNode;
+    } else {
+      this.tail.next = newNode;
+      this.tail = newNode;
+    }
+    this.size++;
+  }
+
+  // Search: O(n)
+  find(data) {
+    let current = this.head;
+    while (current) {
+      if (current.data === data) return current;
+      current = current.next;
+    }
+    return null;
+  }
+
+  // Delete: O(n)
+  delete(data) {
+    if (!this.head) return false;
+
+    if (this.head.data === data) {
+      this.head = this.head.next;
+      if (!this.head) this.tail = null;
+      this.size--;
+      return true;
+    }
+
+    let current = this.head;
+    while (current.next) {
+      if (current.next.data === data) {
+        current.next = current.next.next;
+        if (!current.next) this.tail = current;
+        this.size--;
+        return true;
+      }
+      current = current.next;
+    }
+    return false;
+  }
+}`,
+        }),
         pros: JSON.stringify([
-          'Dynamic size',
-          'Easy insertion/deletion at beginning',
+          'Dynamic size - no need to declare size upfront',
+          'Efficient insertions/deletions at beginning: O(1)',
+          'Memory efficient - only allocates what\'s needed',
+          'Easy to implement stack/queue operations',
         ]),
         cons: JSON.stringify([
-          'No random access',
-          'Extra memory for pointers',
+          'No random access - must traverse from head',
+          'Extra memory for storing pointers/references',
+          'Poor cache locality compared to arrays',
+          'Reverse traversal difficult (singly linked)',
         ]),
         whenToUse: JSON.stringify({
-          good: ['Frequent insertions/deletions', 'Unknown size'],
-          avoid: ['Need random access', 'Memory constrained'],
+          use: [
+            'Frequent insertions/deletions at beginning',
+            'Size is unknown or highly dynamic',
+            'Implementing stacks or queues',
+            'Memory needs to grow/shrink dynamically',
+          ],
+          avoid: [
+            'Need random access by index',
+            'Memory is very constrained',
+            'Frequent access to middle elements',
+            'Cache performance is critical',
+          ],
         }),
+        relatedProblems: JSON.stringify([
+          { id: 'reverse-linked-list', title: 'Reverse Linked List', difficulty: 'Easy' },
+          { id: 'merge-two-sorted-lists', title: 'Merge Two Sorted Lists', difficulty: 'Easy' },
+          { id: 'linked-list-cycle', title: 'Linked List Cycle', difficulty: 'Easy' },
+        ]),
       },
     });
 
