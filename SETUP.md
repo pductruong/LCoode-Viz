@@ -54,16 +54,28 @@ CORS_ORIGIN=http://localhost:5173
 
 ### 5. Run the Application
 
+#### Option 1: Run Both with Single Command (Recommended)
+
+From the root directory:
+```bash
+npm run dev
+```
+
+This will start both backend (port 4000) and frontend (port 3000) concurrently in a single terminal with colored output.
+
+#### Option 2: Run Separately
+
 **Terminal 1 - Backend**:
 ```bash
-cd backend
-npm run dev
+npm run dev:backend
+# Or: cd backend && npm run dev
 ```
 Backend will start on `http://localhost:4000`
 
 **Terminal 2 - Frontend**:
 ```bash
-npm run dev
+npm run dev:frontend
+# Or: vite
 ```
 Frontend will start on `http://localhost:3000`
 

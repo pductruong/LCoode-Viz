@@ -175,18 +175,20 @@ fe8ac51 chore: set up TypeScript configuration
 
 ### Development Mode
 
-**Terminal 1 - Backend**:
+**Single Command (Recommended)**:
 ```bash
-cd backend
 npm run dev
 ```
-Backend: http://localhost:4000
+This starts both backend (port 4000) and frontend (port 3000) concurrently.
 
-**Terminal 2 - Frontend**:
+**Or run separately**:
 ```bash
-npm run dev
+# Terminal 1 - Backend
+npm run dev:backend
+
+# Terminal 2 - Frontend
+npm run dev:frontend
 ```
-Frontend: http://localhost:3000
 
 ### Verify Everything Works
 
