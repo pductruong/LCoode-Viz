@@ -59,7 +59,7 @@ async function seed() {
 }`,
               timeComplexity: 'O(n)',
               spaceComplexity: 'O(n)',
-              steps: JSON.stringify([]),
+              steps: require('fs').readFileSync('/tmp/two-sum.json', 'utf8'),
               explanation: 'Use a hash map to store complements',
             },
           ],
@@ -87,7 +87,35 @@ async function seed() {
           's consists of English letters',
         ]),
         solutions: {
-          create: [],
+          create: [
+            {
+              name: 'Row-by-Row Approach',
+              code: `function convert(s, numRows) {
+  if (numRows === 1) return s;
+
+  const rows = Array(numRows).fill('');
+  let currentRow = 0;
+  let goingDown = false;
+
+  for (const char of s) {
+    rows[currentRow] += char;
+
+    // Change direction at top and bottom rows
+    if (currentRow === 0 || currentRow === numRows - 1) {
+      goingDown = !goingDown;
+    }
+
+    currentRow += goingDown ? 1 : -1;
+  }
+
+  return rows.join('');
+}`,
+              timeComplexity: 'O(n)',
+              spaceComplexity: 'O(n)',
+              steps: require('fs').readFileSync('/tmp/zigzag.json', 'utf8'),
+              explanation: 'Visit characters in zigzag order and append to respective rows',
+            },
+          ],
         },
       },
     });
@@ -116,7 +144,46 @@ async function seed() {
           'All words have the same length',
         ]),
         solutions: {
-          create: [],
+          create: [
+            {
+              name: 'Breadth-First Search (BFS)',
+              code: `function ladderLength(beginWord, endWord, wordList) {
+  const wordSet = new Set(wordList);
+
+  // If endWord is not in wordList, no solution
+  if (!wordSet.has(endWord)) return 0;
+
+  const queue = [[beginWord, 1]];
+  const visited = new Set([beginWord]);
+
+  while (queue.length > 0) {
+    const [word, level] = queue.shift();
+
+    // Found the endWord
+    if (word === endWord) return level;
+
+    // Try all possible transformations
+    for (let i = 0; i < word.length; i++) {
+      for (let c = 97; c <= 122; c++) { // 'a' to 'z'
+        const char = String.fromCharCode(c);
+        const newWord = word.slice(0, i) + char + word.slice(i + 1);
+
+        if (wordSet.has(newWord) && !visited.has(newWord)) {
+          queue.push([newWord, level + 1]);
+          visited.add(newWord);
+        }
+      }
+    }
+  }
+
+  return 0; // No transformation sequence found
+}`,
+              timeComplexity: 'O(M² × N)',
+              spaceComplexity: 'O(M × N)',
+              steps: require('fs').readFileSync('/tmp/word-ladder.json', 'utf8'),
+              explanation: 'M is the length of each word, N is the total number of words in the input word list',
+            },
+          ],
         },
       },
     });
