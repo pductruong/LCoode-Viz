@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"pnpm --filter @lcode-viz/backend dev\" \"pnpm --filter @lcode-viz/frontend dev\" --names \"backend,frontend\" --prefix-colors \"blue,green\"",
+    "dev": "concurrently \"pnpm --filter @lcode-viz/backend dev:watch\" \"pnpm --filter @lcode-viz/frontend dev\" --names \"backend,frontend\" --prefix-colors \"blue,green\"",
     "build": "pnpm --filter @lcode-viz/backend build && pnpm --filter @lcode-viz/frontend build",
     "lint": "pnpm --recursive lint",
     "format": "pnpm --recursive format",
