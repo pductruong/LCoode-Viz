@@ -1,0 +1,14 @@
+{
+  "name": "@lcode-viz/config",
+  "version": "0.1.0",
+  "files": [
+    "eslint",
+    "prettier",
+    "tsconfig"
+  ],
+  "peerDependencies": {
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.9.3"
+  }
+}
