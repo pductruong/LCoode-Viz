@@ -1,270 +1,426 @@
-# LCode-Viz
+# 🎯 LCode-Viz
 
-A visual learning platform for LeetCode problems with interactive animations to help users understand algorithmic solutions step-by-step.
+An interactive platform for visualizing and learning data structures, algorithms, and LeetCode problems through animated step-by-step solutions.
 
-## Overview
+## 📋 Overview
 
-LCode-Viz is an educational web application designed to make learning algorithms and data structures more intuitive through visual representations. Users can explore pre-implemented LeetCode solutions with synchronized animations that demonstrate how each algorithm works internally.
+LCode-Viz is a comprehensive educational platform that helps developers understand algorithms and data structures through visual, interactive problem-solving. Built as a modern monorepo, it provides:
 
-## Core Features
+- **Interactive Problem Visualizations**: Step-by-step animated solutions for LeetCode problems
+- **Learn Section**: In-depth tutorials on data structures and algorithms
+- **Multiple Visualization Types**: Arrays, graphs, trees, linked lists, and more
+- **Code Examples**: Multiple programming languages with syntax highlighting
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
 
-- **Animated Solution Visualizations**: Step-by-step animations showing how algorithms process data
-- **Pre-implemented Solutions**: Curated collection of LeetCode problems with optimized solutions
-- **Interactive Controls**: Play, pause, step forward/backward through algorithm execution
-- **Multiple Language Support**: Solutions available in popular programming languages (Python, JavaScript, Java, C++)
-- **Explanation Panels**: Side-by-side code and visualization with detailed explanations
-- **Problem Categorization**: Browse by difficulty, topic (arrays, trees, graphs, DP, etc.), or company tags
+## ✨ Features
 
-## Architecture
+### Problem Visualizations
+- Step-by-step animation of algorithm execution
+- Visual representation of data structures (arrays, graphs, trees, etc.)
+- Interactive controls (play, pause, step forward/backward)
+- Real-time state tracking (variables, pointers, comparisons)
+- Multiple solution approaches with complexity analysis
 
-### High-Level Architecture
+### Learning Resources
+- Comprehensive topic explanations
+- Time and space complexity breakdowns
+- When to use/avoid specific data structures
+- Code examples in JavaScript, Python, and Java
+- Related problem recommendations
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                     Frontend (SPA)                      │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
-│  │   Problem    │  │  Animation   │  │    Code      │  │
-│  │   Browser    │  │   Engine     │  │   Display    │  │
-│  └──────────────┘  └──────────────┘  └──────────────┘  │
-└─────────────────────────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────┐
-│                   Data Layer (Static)                   │
-│  ┌──────────────────────────────────────────────────┐  │
-│  │  Problem Definitions + Solutions + Animations    │  │
-│  │         (JSON/JS modules in codebase)            │  │
-│  └──────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────┘
-```
+### Developer Experience
+- Modern TypeScript monorepo architecture
+- Hot module reloading for rapid development
+- Comprehensive API documentation
+- Modular seed data structure
+- Type-safe API client
 
-### Component Breakdown
+## 🏗️ Architecture
 
-#### 1. Frontend Application
-
-**Technology Stack (Proposed)**:
-- **Framework**: React/Next.js or Vue.js
-- **Animation Library**: D3.js, GSAP, or Framer Motion
-- **Styling**: Tailwind CSS or styled-components
-- **Code Display**: Monaco Editor or Prism.js with syntax highlighting
-
-**Key Components**:
-- **Problem List View**: Browse and search problems
-- **Problem Detail View**: Display problem description, constraints, examples
-- **Visualization Canvas**: Render animations (arrays, trees, graphs, etc.)
-- **Code Panel**: Display solution code with line highlighting
-- **Control Panel**: Playback controls (play/pause/step/speed)
-- **Explanation Panel**: Step-by-step textual explanations
-
-#### 2. Animation Engine
-
-The animation engine is responsible for:
-- Parsing algorithm steps from solution definitions
-- Managing animation state and timeline
-- Rendering visual elements (nodes, edges, arrays, pointers)
-- Synchronizing code highlighting with visual steps
-
-**Animation State Machine**:
-```
-Initial State → [Step 1] → [Step 2] → ... → [Final State]
-     ↑                                            │
-     └────────────────────────────────────────────┘
-```
-
-#### 3. Data Structure
-
-Each problem will be defined as a structured module/JSON containing:
-
-```javascript
-{
-  id: "two-sum",
-  title: "1. Two Sum",
-  difficulty: "easy",
-  category: ["array", "hash-table"],
-  description: "...",
-  examples: [...],
-  solutions: [
-    {
-      language: "javascript",
-      code: "...",
-      timeComplexity: "O(n)",
-      spaceComplexity: "O(n)",
-      steps: [
-        {
-          line: 5,
-          visualState: {...},
-          explanation: "Initialize hash map"
-        },
-        // ... more steps
-      ]
-    }
-  ],
-  testCases: [...]
-}
-```
-
-## Project Structure (Proposed)
+This is a **pnpm monorepo** with the following structure:
 
 ```
 lcode-viz/
-├── public/
-│   └── assets/
-│       └── images/
-├── src/
-│   ├── components/
-│   │   ├── common/
-│   │   │   ├── Header.jsx
-│   │   │   ├── Footer.jsx
-│   │   │   └── SearchBar.jsx
-│   │   ├── problem/
-│   │   │   ├── ProblemList.jsx
-│   │   │   ├── ProblemCard.jsx
-│   │   │   └── ProblemDetail.jsx
-│   │   ├── visualization/
-│   │   │   ├── VisualizationCanvas.jsx
-│   │   │   ├── ArrayVisualizer.jsx
-│   │   │   ├── TreeVisualizer.jsx
-│   │   │   ├── GraphVisualizer.jsx
-│   │   │   └── ControlPanel.jsx
-│   │   └── code/
-│   │       ├── CodeEditor.jsx
-│   │       └── CodeHighlighter.jsx
-│   ├── data/
-│   │   └── problems/
-│   │       ├── arrays/
-│   │       │   ├── two-sum.js
-│   │       │   ├── best-time-to-buy-stock.js
-│   │       │   └── ...
-│   │       ├── trees/
-│   │       ├── graphs/
-│   │       ├── dynamic-programming/
-│   │       └── index.js
-│   ├── engine/
-│   │   ├── AnimationEngine.js
-│   │   ├── StateManager.js
-│   │   └── renderers/
-│   │       ├── ArrayRenderer.js
-│   │       ├── TreeRenderer.js
-│   │       └── GraphRenderer.js
-│   ├── hooks/
-│   │   ├── useAnimation.js
-│   │   └── useProblem.js
-│   ├── pages/
-│   │   ├── Home.jsx
-│   │   ├── Problems.jsx
-│   │   └── Visualize.jsx
-│   ├── styles/
-│   ├── utils/
-│   └── App.jsx
-├── package.json
-└── README.md
+├── apps/
+│   ├── backend/          # Express API server with Prisma ORM
+│   └── frontend/         # React + Vite application
+├── packages/
+│   ├── api-client/       # Type-safe API client
+│   ├── config/           # Shared configuration
+│   ├── schemas/          # Zod validation schemas
+│   └── types/            # Shared TypeScript types
+├── ARCHITECTURE.md       # Detailed architecture documentation
+├── CHANGELOG.md          # Version history and changes
+└── README.md             # This file
 ```
 
-## How It Works
+## 🛠️ Tech Stack
 
-### 1. Problem Definition Phase (Developer)
-- Implement solution for a LeetCode problem
-- Break down solution into discrete steps
-- Define visual state for each step (what data structures look like)
-- Write explanations for each step
-- Add to problem data repository
+### Frontend
+- **React 18** - UI framework
+- **TypeScript** - Type safety
+- **Vite** - Fast build tool and dev server
+- **Tailwind CSS** - Utility-first styling
+- **Framer Motion** - Smooth animations
+- **React Router** - Client-side routing
+- **Zustand** - State management
+- **Prism.js** - Syntax highlighting
 
-### 2. Runtime Phase (User)
-- User selects a problem from the catalog
-- Frontend loads problem definition and solution steps
-- Animation engine initializes with the first state
-- User controls playback:
-  - **Play**: Automatically advances through steps
-  - **Step Forward/Backward**: Manual step control
-  - **Scrub**: Jump to specific step
-- Visualization updates in sync with code highlighting and explanations
+### Backend
+- **Express** - Web framework
+- **TypeScript** - Type safety
+- **Prisma** - ORM and database toolkit
+- **SQLite** - Embedded database
+- **Zod** - Runtime validation
+- **Winston** - Logging
 
-### 3. Visualization Rendering
-- Animation engine determines current step
-- Renderer translates step data into visual elements
-- Smooth transitions between states using animation library
-- Code panel highlights relevant lines
-- Explanation panel shows step description
+### Shared
+- **pnpm** - Fast, disk-efficient package manager
+- **TypeScript** - Monorepo type safety
+- **ESLint** - Code linting
+- **Prettier** - Code formatting
 
-## Technology Decisions
+## 🚀 Getting Started
 
-### Why Static Data (No Backend)?
-- **Simplicity**: Easier to deploy and maintain
-- **Performance**: No API latency, instant loading
-- **Cost**: Can be hosted on free static hosting (Netlify, Vercel, GitHub Pages)
-- **Versioning**: Solutions tracked in git with the codebase
-- **Extensibility**: Easy for contributors to add new problems via PRs
+### Prerequisites
 
-### Animation Approach
-Two possible approaches:
+- **Node.js** >= 18.x
+- **pnpm** >= 8.x
 
-**Option 1: Declarative State-Based**
-- Define what the visualization should look like at each step
-- Engine handles transitions between states
-- More flexible and easier to author
+```bash
+# Install pnpm if you haven't already
+npm install -g pnpm
+```
 
-**Option 2: Imperative Command-Based**
-- Define explicit animation commands (move, highlight, create, destroy)
-- More control but harder to author
-- Better for complex custom animations
+### Installation
 
-**Recommendation**: Start with Option 1 for faster iteration
+1. **Clone the repository**
+```bash
+git clone https://github.com/yourusername/lcode-viz.git
+cd lcode-viz
+```
 
-## Development Phases
+2. **Install dependencies**
+```bash
+pnpm install
+```
 
-### Phase 1: Foundation
-- [ ] Set up project structure
-- [ ] Implement basic UI layout
-- [ ] Create array visualizer component
-- [ ] Build animation engine MVP
-- [ ] Implement 2-3 simple problems (e.g., Two Sum, Reverse Array)
+3. **Set up the database**
+```bash
+cd apps/backend
+pnpm prisma:generate
+pnpm seed
+```
 
-### Phase 2: Core Features
-- [ ] Add tree and linked list visualizers
-- [ ] Implement code highlighting synchronization
-- [ ] Add playback controls (play/pause/step/speed)
-- [ ] Create problem browsing and filtering
-- [ ] Implement 10-15 common problems across categories
+4. **Start development servers**
 
-### Phase 3: Enhancement
-- [ ] Add graph visualizer
-- [ ] Implement explanation panel with rich text
-- [ ] Add theme switching (light/dark mode)
-- [ ] Create mobile-responsive design
-- [ ] Add 20+ more problems
+From the root directory:
+```bash
+pnpm dev
+```
 
-### Phase 4: Polish
-- [ ] Optimize performance
-- [ ] Add animations polish and transitions
-- [ ] Implement search and advanced filtering
-- [ ] Add problem difficulty progression
-- [ ] User feedback and analytics
+This starts both servers concurrently:
+- Frontend: http://localhost:3000
+- Backend: http://localhost:5000
 
-## Contributing
+Or run them individually:
+```bash
+# Terminal 1 - Backend
+cd apps/backend
+pnpm dev:watch
 
-To add a new problem:
+# Terminal 2 - Frontend
+cd apps/frontend
+pnpm dev
+```
 
-1. Create a new file in `src/data/problems/[category]/`
-2. Follow the problem definition schema
-3. Implement the solution with step breakdown
-4. Define visual states for each step
-5. Test the visualization
-6. Submit a pull request
+## 📦 Available Scripts
 
-## Future Enhancements
+### Root Level
 
-- **User Progress Tracking**: Save which problems users have viewed
-- **Custom Input**: Allow users to input custom test cases
-- **Comparison Mode**: Show multiple solutions side-by-side
-- **Explanation Videos**: Embed video walkthroughs for complex problems
-- **Community Solutions**: Allow users to submit alternative visualizations
-- **Mobile App**: Native mobile application
-- **Quiz Mode**: Test understanding with interactive questions
+```bash
+pnpm dev          # Start both backend and frontend
+pnpm build        # Build all apps
+pnpm lint         # Lint all packages
+pnpm format       # Format all code
+pnpm type-check   # Type-check all packages
+pnpm test         # Run backend tests
+pnpm clean        # Clean all build artifacts
+```
 
-## License
+### Backend (`apps/backend`)
 
-TBD
+```bash
+pnpm dev          # Start server (no watch)
+pnpm dev:watch    # Start server with auto-reload
+pnpm build        # Build for production
+pnpm start        # Start production server
+pnpm seed         # Seed database with problems and topics
+pnpm prisma:generate   # Generate Prisma client
+pnpm prisma:migrate    # Run database migrations
+pnpm prisma:studio     # Open Prisma Studio (DB GUI)
+pnpm test         # Run tests
+pnpm lint         # Lint code
+pnpm format       # Format code
+```
 
-## Contact
+### Frontend (`apps/frontend`)
 
-TBD
+```bash
+pnpm dev          # Start dev server (http://localhost:3000)
+pnpm build        # Build for production
+pnpm preview      # Preview production build
+pnpm lint         # Lint code
+pnpm format       # Format code
+```
+
+## 📚 Documentation
+
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Detailed system architecture and design decisions
+- **[CONTRIBUTING.md](./apps/backend/CONTRIBUTING.md)** - Guide for adding problems and topics
+- **[CHANGELOG.md](./CHANGELOG.md)** - Version history and release notes
+- **[Seed Data README](./apps/backend/src/db/seeds/README.md)** - Seed data structure reference
+
+## 🎓 Adding Content
+
+### Adding a New Problem
+
+1. Create a problem file in `apps/backend/src/db/seeds/problems/`
+2. Export it from `problems/index.ts`
+3. Run `pnpm seed` to update the database
+
+See [CONTRIBUTING.md](./apps/backend/CONTRIBUTING.md) for detailed instructions and examples.
+
+### Adding a New Topic
+
+1. Create a topic file in `apps/backend/src/db/seeds/topics/`
+2. Export it from `topics/index.ts`
+3. Run `pnpm seed` to update the database
+
+See [CONTRIBUTING.md](./apps/backend/CONTRIBUTING.md) for detailed instructions and examples.
+
+## 🧪 Testing
+
+### Backend Tests
+```bash
+cd apps/backend
+pnpm test         # Run all tests
+pnpm test:watch   # Run tests in watch mode
+```
+
+### API Testing
+```bash
+# Start the backend server
+pnpm dev
+
+# Test endpoints
+curl http://localhost:5000/api/problems
+curl http://localhost:5000/api/problems/1
+curl http://localhost:5000/api/topics
+curl http://localhost:5000/api/topics/linked-list
+```
+
+## 🏗️ Building for Production
+
+### Build All Apps
+```bash
+pnpm build
+```
+
+### Build Individual Apps
+```bash
+# Backend
+cd apps/backend
+pnpm build
+
+# Frontend
+cd apps/frontend
+pnpm build
+```
+
+### Preview Production Build
+```bash
+cd apps/frontend
+pnpm preview
+```
+
+## 📁 Project Structure
+
+```
+lcode-viz/
+├── apps/
+│   ├── backend/
+│   │   ├── src/
+│   │   │   ├── db/
+│   │   │   │   ├── seed.ts              # Main seed script
+│   │   │   │   └── seeds/
+│   │   │   │       ├── types.ts         # TypeScript interfaces
+│   │   │   │       ├── problems/        # Problem seed data
+│   │   │   │       │   ├── index.ts
+│   │   │   │       │   ├── twoSum.ts
+│   │   │   │       │   └── ...
+│   │   │   │       └── topics/          # Topic seed data
+│   │   │   │           ├── index.ts
+│   │   │   │           ├── linkedList.ts
+│   │   │   │           └── ...
+│   │   │   ├── routes/                  # API routes
+│   │   │   ├── utils/                   # Utilities
+│   │   │   └── server.ts                # Express server
+│   │   ├── prisma/
+│   │   │   ├── schema.prisma            # Database schema
+│   │   │   └── dev.db                   # SQLite database
+│   │   ├── CONTRIBUTING.md              # Contributing guide
+│   │   └── package.json
+│   └── frontend/
+│       ├── src/
+│       │   ├── components/              # React components
+│       │   ├── pages/                   # Page components
+│       │   ├── providers/               # Context providers
+│       │   ├── services/                # API services
+│       │   ├── hooks/                   # Custom hooks
+│       │   ├── utils/                   # Utilities
+│       │   ├── App.tsx
+│       │   └── main.tsx
+│       └── package.json
+├── packages/
+│   ├── api-client/                      # Type-safe API client
+│   ├── config/                          # Shared configuration
+│   ├── schemas/                         # Zod schemas
+│   └── types/                           # Shared TypeScript types
+├── ARCHITECTURE.md
+├── CHANGELOG.md
+├── README.md
+├── package.json
+└── pnpm-workspace.yaml
+```
+
+## 🔧 Development Workflow
+
+### 1. Feature Development
+```bash
+# Create a feature branch
+git checkout -b feature/add-binary-search
+
+# Make your changes
+# Add new problem/topic files
+# Update seed data
+
+# Test your changes
+pnpm seed
+pnpm dev
+
+# Verify in browser
+open http://localhost:3000
+```
+
+### 2. Code Quality
+```bash
+# Lint code
+pnpm lint
+
+# Format code
+pnpm format
+
+# Type-check
+pnpm type-check
+
+# Run tests
+pnpm test
+```
+
+### 3. Commit Changes
+```bash
+git add .
+git commit -m "feat: add binary search problem with visualization"
+git push origin feature/add-binary-search
+```
+
+## 🗄️ Database Management
+
+### View Database
+```bash
+cd apps/backend
+pnpm prisma:studio
+# Opens Prisma Studio at http://localhost:5555
+```
+
+### Reset Database
+```bash
+cd apps/backend
+rm prisma/dev.db
+pnpm prisma:generate
+pnpm seed
+```
+
+### Modify Schema
+1. Edit `apps/backend/prisma/schema.prisma`
+2. Run migration:
+```bash
+pnpm prisma:migrate
+```
+3. Update seed data if needed
+4. Re-seed database:
+```bash
+pnpm seed
+```
+
+## 🌐 API Endpoints
+
+### Problems
+- `GET /api/problems` - List all problems
+- `GET /api/problems/:id` - Get specific problem
+- `GET /api/problems/category/:category` - Filter by category
+
+### Topics
+- `GET /api/topics` - List all topics
+- `GET /api/topics/:id` - Get specific topic
+- `GET /api/topics/category/:category` - Filter by category
+
+### Health Check
+- `GET /api/health` - Server health status
+
+## 🎨 Visualization Types
+
+LCode-Viz supports multiple visualization types:
+
+- **Array**: Step-by-step array manipulation (Two Sum, Container With Most Water)
+- **Graph**: BFS/DFS traversal with queue visualization (Word Ladder)
+- **Zigzag**: Grid-based pattern visualization (Zigzag Conversion)
+- **Tree**: Binary tree traversal and manipulation
+- **Linked List**: Node-based visualization
+
+Each visualization type provides:
+- Interactive playback controls
+- State tracking (variables, pointers)
+- Visual highlighting (active, comparing, found, etc.)
+- Step-by-step explanations
+
+## 🤝 Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](./apps/backend/CONTRIBUTING.md) for:
+
+- How to add new problems
+- How to add new topics
+- Code style guidelines
+- Testing requirements
+- Pull request process
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🙏 Acknowledgments
+
+- LeetCode for problem inspiration
+- The open-source community for amazing tools and libraries
+- All contributors who help improve this platform
+
+## 📧 Contact
+
+For questions, suggestions, or issues:
+- Open an issue on GitHub
+- Email: your-email@example.com
+
+---
+
+**Built with ❤️ for developers learning algorithms and data structures**
