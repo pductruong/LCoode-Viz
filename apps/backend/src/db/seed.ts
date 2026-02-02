@@ -59,7 +59,7 @@ async function seed() {
 }`,
               timeComplexity: 'O(n)',
               spaceComplexity: 'O(n)',
-              steps: require('fs').readFileSync('/tmp/two-sum.json', 'utf8'),
+              steps: JSON.stringify([]),
               explanation: 'Use a hash map to store complements',
             },
           ],
@@ -112,8 +112,284 @@ async function seed() {
 }`,
               timeComplexity: 'O(n)',
               spaceComplexity: 'O(n)',
-              steps: require('fs').readFileSync('/tmp/zigzag.json', 'utf8'),
+              steps: JSON.stringify([]),
               explanation: 'Visit characters in zigzag order and append to respective rows',
+            },
+          ],
+        },
+      },
+    });
+
+    // Seed Container With Most Water problem
+    await prisma.problem.create({
+      data: {
+        id: 'container-with-most-water',
+        title: '11. Container With Most Water',
+        difficulty: 'Medium',
+        categories: JSON.stringify(['Array', 'Two Pointers', 'Greedy']),
+        description: `You are given an integer array \`height\` of length \`n\`. There are \`n\` vertical lines drawn such that the two endpoints of the \`i\`th line are \`(i, 0)\` and \`(i, height[i])\`.
+
+Find two lines that together with the x-axis form a container, such that the container contains the most water.
+
+Return the maximum amount of water a container can store.
+
+**Notice** that you may not slant the container.`,
+        visualizationType: 'array',
+        examples: JSON.stringify([
+          {
+            input: { height: [1, 8, 6, 2, 5, 4, 8, 3, 7] },
+            output: 49,
+            explanation: 'The above vertical lines are represented by array [1,8,6,2,5,4,8,3,7]. In this case, the max area of water (blue section) the container can contain is 49 (between index 1 and index 8: min(8,7) * (8-1) = 7 * 7 = 49).',
+          },
+          {
+            input: { height: [1, 1] },
+            output: 1,
+            explanation: 'The container is formed between index 0 and 1, with area = min(1,1) * (1-0) = 1.',
+          },
+          {
+            input: { height: [4, 3, 2, 1, 4] },
+            output: 16,
+            explanation: 'The container is formed between index 0 and 4, with area = min(4,4) * (4-0) = 16.',
+          },
+        ]),
+        constraints: JSON.stringify([
+          'n == height.length',
+          '2 <= n <= 10⁵',
+          '0 <= height[i] <= 10⁴',
+        ]),
+        solutions: {
+          create: [
+            {
+              name: 'Brute Force',
+              code: `function maxArea(height) {
+  let maxArea = 0;
+
+  // Try every possible pair of lines
+  for (let left = 0; left < height.length; left++) {
+    for (let right = left + 1; right < height.length; right++) {
+      // Calculate area between left and right
+      const width = right - left;
+      const minHeight = Math.min(height[left], height[right]);
+      const area = width * minHeight;
+
+      // Update maximum area
+      maxArea = Math.max(maxArea, area);
+    }
+  }
+
+  return maxArea;
+}`,
+              timeComplexity: 'O(n²)',
+              spaceComplexity: 'O(1)',
+              steps: JSON.stringify([
+                {
+                  step: 1,
+                  description: 'Initialize maxArea to 0',
+                  state: {
+                    array: [1, 8, 6, 2, 5, 4, 8, 3, 7],
+                    left: -1,
+                    right: -1,
+                    maxArea: 0,
+                    currentArea: 0,
+                  },
+                  line: 1,
+                },
+                {
+                  step: 2,
+                  description: 'Start with left = 0, try all right positions',
+                  state: {
+                    array: [1, 8, 6, 2, 5, 4, 8, 3, 7],
+                    left: 0,
+                    right: 1,
+                    maxArea: 0,
+                    currentArea: 1,
+                    calculation: 'min(1,8) * (1-0) = 1',
+                  },
+                  line: 5,
+                },
+                {
+                  step: 3,
+                  description: 'Continue checking all pairs...',
+                  state: {
+                    array: [1, 8, 6, 2, 5, 4, 8, 3, 7],
+                    left: 1,
+                    right: 8,
+                    maxArea: 49,
+                    currentArea: 49,
+                    calculation: 'min(8,7) * (8-1) = 49',
+                  },
+                  line: 8,
+                },
+              ]),
+              explanation: 'Check every possible pair of lines - inefficient but guarantees finding the maximum.',
+            },
+            {
+              name: 'Two Pointers (Optimal)',
+              code: `function maxArea(height) {
+  let maxArea = 0;
+  let left = 0;
+  let right = height.length - 1;
+
+  while (left < right) {
+    // Calculate current area
+    const width = right - left;
+    const minHeight = Math.min(height[left], height[right]);
+    const area = width * minHeight;
+
+    // Update maximum area
+    maxArea = Math.max(maxArea, area);
+
+    // Move pointer with smaller height inward
+    // (moving the larger one can only decrease area)
+    if (height[left] < height[right]) {
+      left++;
+    } else {
+      right--;
+    }
+  }
+
+  return maxArea;
+}`,
+              timeComplexity: 'O(n)',
+              spaceComplexity: 'O(1)',
+              steps: JSON.stringify([
+                {
+                  step: 1,
+                  description: 'Initialize two pointers at start and end',
+                  state: {
+                    array: [1, 8, 6, 2, 5, 4, 8, 3, 7],
+                    left: 0,
+                    right: 8,
+                    maxArea: 0,
+                    currentArea: 0,
+                    width: 8,
+                    minHeight: 0,
+                  },
+                  line: 2,
+                },
+                {
+                  step: 2,
+                  description: 'Calculate area: min(1,7) × 8 = 8',
+                  state: {
+                    array: [1, 8, 6, 2, 5, 4, 8, 3, 7],
+                    left: 0,
+                    right: 8,
+                    maxArea: 8,
+                    currentArea: 8,
+                    width: 8,
+                    minHeight: 1,
+                    calculation: 'min(1,7) × 8 = 8',
+                  },
+                  line: 8,
+                },
+                {
+                  step: 3,
+                  description: 'Move left pointer (height[0]=1 < height[8]=7)',
+                  state: {
+                    array: [1, 8, 6, 2, 5, 4, 8, 3, 7],
+                    left: 1,
+                    right: 8,
+                    maxArea: 8,
+                    currentArea: 8,
+                    highlight: 'Smaller height moved',
+                  },
+                  line: 13,
+                },
+                {
+                  step: 4,
+                  description: 'Calculate area: min(8,7) × 7 = 49',
+                  state: {
+                    array: [1, 8, 6, 2, 5, 4, 8, 3, 7],
+                    left: 1,
+                    right: 8,
+                    maxArea: 49,
+                    currentArea: 49,
+                    width: 7,
+                    minHeight: 7,
+                    calculation: 'min(8,7) × 7 = 49',
+                  },
+                  line: 8,
+                },
+                {
+                  step: 5,
+                  description: 'Move right pointer (height[8]=7 < height[1]=8)',
+                  state: {
+                    array: [1, 8, 6, 2, 5, 4, 8, 3, 7],
+                    left: 1,
+                    right: 7,
+                    maxArea: 49,
+                    currentArea: 49,
+                  },
+                  line: 15,
+                },
+                {
+                  step: 6,
+                  description: 'Calculate area: min(8,3) × 6 = 18',
+                  state: {
+                    array: [1, 8, 6, 2, 5, 4, 8, 3, 7],
+                    left: 1,
+                    right: 7,
+                    maxArea: 49,
+                    currentArea: 18,
+                    width: 6,
+                    minHeight: 3,
+                    calculation: 'min(8,3) × 6 = 18',
+                  },
+                  line: 8,
+                },
+                {
+                  step: 7,
+                  description: 'Move right pointer (height[7]=3 < height[1]=8)',
+                  state: {
+                    array: [1, 8, 6, 2, 5, 4, 8, 3, 7],
+                    left: 1,
+                    right: 6,
+                    maxArea: 49,
+                    currentArea: 18,
+                  },
+                  line: 15,
+                },
+                {
+                  step: 8,
+                  description: 'Calculate area: min(8,8) × 5 = 40',
+                  state: {
+                    array: [1, 8, 6, 2, 5, 4, 8, 3, 7],
+                    left: 1,
+                    right: 6,
+                    maxArea: 49,
+                    currentArea: 40,
+                    width: 5,
+                    minHeight: 8,
+                    calculation: 'min(8,8) × 5 = 40',
+                  },
+                  line: 8,
+                },
+                {
+                  step: 9,
+                  description: 'Continue until pointers meet',
+                  state: {
+                    array: [1, 8, 6, 2, 5, 4, 8, 3, 7],
+                    left: 2,
+                    right: 6,
+                    maxArea: 49,
+                    currentArea: 32,
+                  },
+                  line: 5,
+                },
+                {
+                  step: 10,
+                  description: 'Pointers meet - return maxArea = 49',
+                  state: {
+                    array: [1, 8, 6, 2, 5, 4, 8, 3, 7],
+                    left: 6,
+                    right: 6,
+                    maxArea: 49,
+                    result: 49,
+                  },
+                  line: 19,
+                },
+              ]),
+              explanation: 'Use two pointers starting from both ends. Always move the pointer with the smaller height inward, as moving the larger one can only decrease the area. This greedy approach guarantees we find the maximum area in O(n) time.',
             },
           ],
         },
@@ -180,7 +456,7 @@ async function seed() {
 }`,
               timeComplexity: 'O(M² × N)',
               spaceComplexity: 'O(M × N)',
-              steps: require('fs').readFileSync('/tmp/word-ladder.json', 'utf8'),
+              steps: JSON.stringify([]),
               explanation: 'M is the length of each word, N is the total number of words in the input word list',
             },
           ],
